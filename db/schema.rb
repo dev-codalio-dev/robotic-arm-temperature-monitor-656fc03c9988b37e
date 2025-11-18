@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_18_220857) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_18_220925) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -239,6 +239,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_18_220857) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "temperature_readings", force: :cascade do |t|
+    t.float "temperature", null: false
+    t.datetime "recorded_at", null: false
+    t.bigint "temperature_sensor_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["temperature_sensor_id"], name: "index_temperature_readings_on_temperature_sensor_id"
+  end
+
+  create_table "temperature_sensors", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "location", null: false
+    t.bigint "organization_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_temperature_sensors_on_name", unique: true
+    t.index ["organization_id"], name: "index_temperature_sensors_on_organization_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
@@ -307,6 +326,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_18_220857) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "temperature_readings", "temperature_sensors"
+  add_foreign_key "temperature_sensors", "organizations"
   add_foreign_key "users_role_invites", "organizations"
   add_foreign_key "users_role_invites", "roles"
   add_foreign_key "users_roles", "organizations"
